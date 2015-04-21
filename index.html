@@ -26,6 +26,13 @@ body {
 <body>
 	<div id="map"></div>
 
+        <svg width="0" height="0">
+          <clipPath id="clipCircle">
+            <circle cx="0" cy="0" r="100" id="circleObj">
+            </circle>
+          </clipPath>
+        </svg>
+        
 	<script>
 		var StickyTileLayer = L.TileLayer.extend({
 			onAdd : function(map) {
@@ -82,13 +89,23 @@ body {
 			zoom : 15,
 			center : [ 36.0847, 140.0999 ],
 			layers : [ layer1, layer2 ]
-		});
+	 });
 
-		map.on("mousemove", function(event) {
-			var s = event.containerPoint;
-			var a = "circle(200px at " + s.x + "px " + s.y + "px)";
-			layer2.getContainer().style["-webkit-clip-path"] = a;
-		});
+         if (!L.Browser.webkit) {
+           layer2.getContainer().style["clip-path"] = "url('#clipCircle')"
+         };
+         
+	 map.on("mousemove", function(event) {
+	   var s = event.containerPoint;
+           if (L.Browser.webkit) {
+	     var a = "circle(200px at " + s.x + "px " + s.y + "px)";
+	     layer2.getContainer().style["-webkit-clip-path"] = a;
+           } else {
+             var d = document.getElementById("circleObj");
+             d.setAttribute("cx", s.x);
+             d.setAttribute("cy", s.y);
+           }
+	 });
 	</script>
 </body>
 </html>
